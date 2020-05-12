@@ -13,6 +13,7 @@
  */
 const express = require('express');
 const aws = require('aws-sdk');
+const s3router = require('react-s3-uploader/s3router');
 
 /*
  * Set-up and run the Express app.
@@ -42,6 +43,20 @@ const S3_BUCKET = process.env.S3_BUCKET;
 app.get('/account', (req, res) => res.render('account.html'));
 
 /*
+ * Respond to GET requests to /api/v1/sign-s3
+ * see https://github.com/odysseyscience/react-s3-uploader#bundled-router
+ */
+app.use('/api/v1/s3', s3router({
+	bucket: S3_BUCKET,
+	signatureVersion: 'v4', //optional (use for some amazon regions: frankfurt and others)
+	signatureExpires: 60, //optional, number of seconds the upload signed URL should be valid for (defaults to 60)
+	headers: {'Access-Control-Allow-Origin': '*'}, // optional
+	ACL: 'private', // this is default
+	uniquePrefix: true // (4.0.2 and above) default is true, setting the attribute to false preserves the original filename in S3
+}));
+
+
+/*
  * Respond to GET requests to /sign-s3.
  * Upon request, return JSON containing the temporarily-signed S3 request and
  * the anticipated URL of the image.
@@ -55,7 +70,7 @@ app.get('/sign-s3', (req, res) => {
     Key: fileName,
     Expires: 60,
     ContentType: fileType,
-    ACL: 'public-read'
+    // ACL: 'public-read' // this doesn't work - prob need to tweak bucket policy, but we're OK with private files for POC
   };
 
   s3.getSignedUrl('putObject', s3Params, (err, data) => {
@@ -71,6 +86,7 @@ app.get('/sign-s3', (req, res) => {
     res.end();
   });
 });
+
 
 /*
  * Respond to POST requests to /submit_form.
