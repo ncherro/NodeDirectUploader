@@ -23,6 +23,7 @@ app.use(express.static('./public'));
 app.engine('html', require('ejs').renderFile);
 app.listen(process.env.PORT || 3000);
 
+
 /*
  * Configure the AWS region of the target bucket.
  * Remember to change this to the relevant region.
