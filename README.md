@@ -42,6 +42,8 @@ policy and attach it to your user / role
 To allow upload via a javascript client, add these rules to your bucket's
 Permissions > CORS Configuration
 
+_Note_ - the configuration below allows upload from all origins. You may want to be more restrictive. See https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#cors-allowed-origin for details.
+
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
