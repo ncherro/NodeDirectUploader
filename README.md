@@ -1,5 +1,81 @@
 # NodeDirectUploader
 
+## Setup
+
+Replace `<bucket-name>` below with the name of your bucket
+
+### IAM policy
+
+To give your User / Role read/write permissions to your bucket, create this IAM
+policy and attach it to your user / role
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<bucket-name>"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<bucket-name>/*"
+            ]
+        }
+    ]
+}
+```
+
+### Bucket CORS
+
+To allow upload via a javascript client, add these rules to your bucket's
+Permissions > CORS Configuration
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+<CORSRule>
+    <AllowedOrigin>*</AllowedOrigin>
+    <AllowedMethod>GET</AllowedMethod>
+    <AllowedMethod>POST</AllowedMethod>
+    <AllowedMethod>PUT</AllowedMethod>
+    <AllowedHeader>*</AllowedHeader>
+</CORSRule>
+</CORSConfiguration>
+```
+
+### Bucket Policy
+
+_if_ you want public-read access to all bucket objects, then add these rules to
+your bucket's Permissions > Bucket Policy
+
+```
+{
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowPublicRead",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::<bucket-name>/*"
+        }
+    ]
+}
+```
 
 ## Licensing
 
